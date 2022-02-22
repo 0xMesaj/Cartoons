@@ -1,0 +1,10 @@
+/artifacts
+/cache
+/node_modules
+/package-lock.json
+/Generation
+/config/.env
+/output
+/metadata
+/MerkleTree
+/deploy

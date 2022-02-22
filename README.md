@@ -1,0 +1,1 @@
+Cartoons NFT is an ERC-721A NFT Consisting of 7,777 Cartoons.
