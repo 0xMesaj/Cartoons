@@ -31,7 +31,7 @@ contract Cartoons is ERC721A, Ownable, ReentrancyGuard {
     bool public isWhitelistActive;  // Access modifier for whitelist mint function
     bool public isPublicMintActive; // Access modifier for public mint function
 
-    constructor (bytes32 _root, uint256 _rootMintAmt) ERC721A("Cartoons", "TOONS") {
+    constructor (bytes32 _root, uint256 _rootMintAmt) ERC721A("Cartoons", "TOON") {
         root = _root;
         rootMintAmt = _rootMintAmt;
 
