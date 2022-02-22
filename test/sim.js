@@ -61,6 +61,14 @@ describe('Cartoons NFT Tests', () => {
         await expect(cartoons.publicMint(1,{value: ethers.utils.parseEther("0.069")})).to.be.revertedWith('Insufficient Payment')
 
         await cartoons.publicMint(1,{value: ethers.utils.parseEther("0.07")})
+
+        // Test withdraw functionality
+        var owner = await cartoons.owner()
+        var prov = ethers.provider;
+        var prebal = await prov.getBalance(owner)
+        await cartoons.withdrawEth()
+        var bal = await prov.getBalance(owner)
+        await expect(parseInt(bal._hex)).to.be.greaterThan(parseInt(prebal._hex))
     });
 
     it('Cartoons Merkle Tree Exploit Sim:', async () => {
