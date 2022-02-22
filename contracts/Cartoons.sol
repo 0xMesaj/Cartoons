@@ -2,7 +2,7 @@ import './merkle/MerkleProof.sol';
 import './interfaces/IERC20.sol';
 import './ReentrancyGuard.sol';
 import './ERC721A.sol';
-import './Ownable.sol';
+import '@openzeppelin/contracts/access/Ownable.sol';
 
 pragma solidity ^0.8.6;
 
@@ -43,7 +43,7 @@ contract Cartoons is ERC721A, Ownable, ReentrancyGuard {
         _proof - bytes32 array to verify hash of msg.sender(leaf) is contained in merkle tree
         _amt - uint256 specifies amount to mint (must be no greater than rootMintAmt)
     */
-    function whitelistMint(bytes32[] calldata _proof, uint64 _amt) public payable nonReentrant {
+    function whitelistMint(bytes32[] calldata _proof, uint64 _amt) external payable nonReentrant {
         require(msg.sender == tx.origin, "Minting from Contract not Allowed");
         require(isWhitelistActive, "Cartoons Whitelist Mint Not Active");
         uint64 newClaimTotal = _getAux(msg.sender) + _amt;
@@ -62,7 +62,7 @@ contract Cartoons is ERC721A, Ownable, ReentrancyGuard {
         Public Mint - Reentrancy Guarded
         _amt - uint256 amount to mint
     */
-    function publicMint(uint256 _amt) public payable nonReentrant {
+    function publicMint(uint256 _amt) external payable nonReentrant {
         require(msg.sender == tx.origin, "Minting from Contract not Allowed");
         require(isPublicMintActive, "Cartoons Public Mint Not Active");
         require(_amt <= pubMintMaxPerTx, "Requested Mint Amount Exceeds Limit Per Tx");
@@ -80,7 +80,7 @@ contract Cartoons is ERC721A, Ownable, ReentrancyGuard {
         Access modifier for whitelist mint function
         _val - TRUE for active / FALSE for inactive mint
     */
-    function setWhitelistMintActive(bool _val) public onlyOwner {
+    function setWhitelistMintActive(bool _val) external onlyOwner {
         isWhitelistActive = _val;
     }
 
@@ -88,7 +88,7 @@ contract Cartoons is ERC721A, Ownable, ReentrancyGuard {
         Access modifier for public mint function
         _val - TRUE for active / FALSE for inactive mint
     */
-    function setPublicMintActive(bool _val) public onlyOwner {
+    function setPublicMintActive(bool _val) external onlyOwner {
         isPublicMintActive = _val;
     }
 
@@ -98,7 +98,7 @@ contract Cartoons is ERC721A, Ownable, ReentrancyGuard {
         _amt - uint256 amount each whitelisted address can mint
     */
 
-    function plantNewRoot(bytes32 _root, uint256 _amt) public onlyOwner {
+    function plantNewRoot(bytes32 _root, uint256 _amt) external onlyOwner {
         require(!isWhitelistActive, "Whitelist Minting Not Disabled");
         root = _root;
         rootMintAmt = _amt;
@@ -108,7 +108,7 @@ contract Cartoons is ERC721A, Ownable, ReentrancyGuard {
         Sets new base URI for Cartoons NFT as _uri
         _uri - string value to be new base URI
     */
-    function setBaseURI(string memory _uri) public onlyOwner {
+    function setBaseURI(string memory _uri) external onlyOwner {
         baseURI = _uri;
     }
 
@@ -116,7 +116,7 @@ contract Cartoons is ERC721A, Ownable, ReentrancyGuard {
         Sets new mint price
         _price - uint256 value to be new price
     */
-    function setItemPrice(uint256 _price) public onlyOwner {
+    function setItemPrice(uint256 _price) external onlyOwner {
 		itemPrice = _price;
 	}
 
@@ -124,7 +124,7 @@ contract Cartoons is ERC721A, Ownable, ReentrancyGuard {
         Sets new total supply
         _amount - uint256 value to be new total supply
     */
-    function setTotalSupply(uint256 _amount) public onlyOwner {
+    function setTotalSupply(uint256 _amount) external onlyOwner {
         require(_currentIndex > _amount, "Cannot change total supply lower than current total");
 		MAX_SUPPLY = _amount;
 	}
@@ -133,7 +133,7 @@ contract Cartoons is ERC721A, Ownable, ReentrancyGuard {
         Sets new max mint amount per transaction
         _amount - uint256 value to be new max mint amount per transaction
     */
-    function setMaxMintPerTx(uint256 _amt) public onlyOwner {
+    function setMaxMintPerTx(uint256 _amt) external onlyOwner {
 		pubMintMaxPerTx = _amt;
 	}
 
