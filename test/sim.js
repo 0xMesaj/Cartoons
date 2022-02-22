@@ -1,6 +1,5 @@
 const { expect } = require('chai');
 const { ethers } = require('hardhat');
-// const { utils, BigNumber, constants, jsonRpcProvider} = require("ethers");
 
 const { MerkleTree } = require('merkletreejs');
 const keccak256 = require('keccak256');
