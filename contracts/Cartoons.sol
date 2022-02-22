@@ -49,7 +49,7 @@ contract Cartoons is ERC721A, Ownable, ReentrancyGuard {
         uint64 newClaimTotal = _getAux(msg.sender) + _amt;
         require(newClaimTotal <= rootMintAmt, "Requested Claim Amount Invalid");
         require(totalSupply() + _amt <= MAX_SUPPLY, "Mint Amount Exceeds Total Supply Cap");
-        require(itemPrice * _amt == msg.value,  "Insufficient Payment");
+        require(itemPrice * _amt == msg.value,  "Incorrect Payment");
         bytes32 leaf = keccak256(abi.encodePacked(msg.sender));
         require(MerkleProof.verify(_proof,root,leaf), "Invalid Proof/Root/Leaf");
 
@@ -67,7 +67,7 @@ contract Cartoons is ERC721A, Ownable, ReentrancyGuard {
         require(isPublicMintActive, "Cartoons Public Mint Not Active");
         require(_amt <= pubMintMaxPerTx, "Requested Mint Amount Exceeds Limit Per Tx");
         require(totalSupply() + _amt <= MAX_SUPPLY, "Mint Amount Exceeds Total Supply Cap");
-        require(itemPrice * _amt == msg.value,  "Insufficient Payment");
+        require(itemPrice * _amt == msg.value,  "Incorrect Payment");
 
         _safeMint(msg.sender, _amt);
     }

@@ -60,7 +60,7 @@ describe('Cartoons NFT Tests', () => {
         await expect(cartoons.publicMint(1,{value: ethers.utils.parseEther('0.07')})).to.be.revertedWith('Cartoons Public Mint Not Active')
         await cartoons.setPublicMintActive(true)
         await expect(cartoons.publicMint(2,{value: ethers.utils.parseEther('0.14')})).to.be.revertedWith('Requested Mint Amount Exceeds Limit Per Tx')
-        await expect(cartoons.publicMint(1,{value: ethers.utils.parseEther('0.069')})).to.be.revertedWith('Insufficient Payment')
+        await expect(cartoons.publicMint(1,{value: ethers.utils.parseEther('0.069')})).to.be.revertedWith('Incorrect Payment')
 
         await cartoons.publicMint(1,{value: ethers.utils.parseEther('0.07')})
 
