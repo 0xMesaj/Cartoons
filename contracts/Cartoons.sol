@@ -4,7 +4,6 @@ import './interfaces/IERC20.sol';
 import './ReentrancyGuard.sol';
 import './ERC721A.sol';
 
-
 pragma solidity ^0.8.6;
 
 /*
