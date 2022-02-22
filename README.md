@@ -1,7 +1,7 @@
 Cartoons NFT is an ERC-721A NFT Consisting of 7,777 Cartoons.
 
 
-To install and run tests create your own version of environment file located in ./config/.env with following variables (or just change values directly in hardhat config):
+To install and run tests create your own version of environment file located in ./config/.env with following variables (or just change values directly in hardhat config):<br />
 PRIVATE_KEY_RINKEBY - Private Key<br />
 PRIVATE_KEY - Private Key<br />
 ETHERSCAN_KEY - Etherscan Key<br />
