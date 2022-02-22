@@ -47,10 +47,15 @@ describe('Cartoons NFT Tests', () => {
         await cartoons.connect(whitelist1).whitelistMint(hexProof,1,{value: ethers.utils.parseEther('0.07')})
         expect(await cartoons.connect(whitelist1).getAllowedMintAmount(hexProof,whitelist1.address)).to.equal('0')
 
-        expect(await cartoons.connect(hacker).getAllowedMintAmount(hexProof,whitelist1.address)).to.equal('0')  // un-whitelisted address should have 0 allowed mints
+  
 
-        // Whitelist mint from whitelist2
+        // Whitelist mint from whitelist and test total supply stuff
+        await expect(cartoons.setTotalSupply(1)).to.be.revertedWith("Cannot Change Total Supply Lower Than Current Total")
+        await cartoons.setTotalSupply(2)
         const hexProof2 = merkleTree.getHexProof(keccak256(whitelist2.address))
+        await expect(cartoons.connect(whitelist2).whitelistMint(hexProof2,1,{value: ethers.utils.parseEther('0.07')})).to.be.revertedWith('Mint Amount Exceeds Total Supply Cap')  // Try to mint over current supply cap of 2
+        await cartoons.setTotalSupply(7777)
+        
         await expect(cartoons.connect(whitelist2).whitelistMint(hexProof2,3,{value: ethers.utils.parseEther('0.21')})).to.be.revertedWith('Requested Claim Amount Invalid')  // Try to mint 3 when max should be 2
         await cartoons.connect(whitelist2).whitelistMint(hexProof2,2,{value: ethers.utils.parseEther('0.14')})
         expect(await cartoons.connect(whitelist2).getAllowedMintAmount(hexProof2,whitelist2.address)).to.equal('0')

@@ -125,7 +125,7 @@ contract Cartoons is ERC721A, Ownable, ReentrancyGuard {
         _amount - uint256 value to be new total supply
     */
     function setTotalSupply(uint256 _amount) external onlyOwner {
-        require(_currentIndex > _amount, "Cannot change total supply lower than current total");
+        require(totalSupply() <= _amount, "Cannot Change Total Supply Lower Than Current Total");
 		MAX_SUPPLY = _amount;
 	}
 
