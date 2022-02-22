@@ -1,8 +1,9 @@
+import '@openzeppelin/contracts/access/Ownable.sol';
 import './merkle/MerkleProof.sol';
 import './interfaces/IERC20.sol';
 import './ReentrancyGuard.sol';
 import './ERC721A.sol';
-import '@openzeppelin/contracts/access/Ownable.sol';
+
 
 pragma solidity ^0.8.6;
 
