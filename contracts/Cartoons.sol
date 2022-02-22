@@ -149,8 +149,7 @@ contract Cartoons is ERC721A, Ownable, ReentrancyGuard {
     */
     function getAllowedMintAmount(bytes32[] calldata _proof, address _user) public view returns (uint256 amount) {
         bytes32 leaf = keccak256(abi.encodePacked(_user));
-        require(MerkleProof.verify(_proof,root,leaf), "Invalid Proof");
-        amount = rootMintAmt - _getAux(_user);
+        amount = MerkleProof.verify(_proof,root,leaf) ? (rootMintAmt - _getAux(_user)) : 0;
     }
 
     /*

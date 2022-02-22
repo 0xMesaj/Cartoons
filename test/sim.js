@@ -47,6 +47,8 @@ describe('Cartoons NFT Tests', () => {
         await cartoons.connect(whitelist1).whitelistMint(hexProof,1,{value: ethers.utils.parseEther('0.07')})
         expect(await cartoons.connect(whitelist1).getAllowedMintAmount(hexProof,whitelist1.address)).to.equal('0')
 
+        expect(await cartoons.connect(hacker).getAllowedMintAmount(hexProof,whitelist1.address)).to.equal('0')  // un-whitelisted address should have 0 allowed mints
+
         // Whitelist mint from whitelist2
         const hexProof2 = merkleTree.getHexProof(keccak256(whitelist2.address))
         await expect(cartoons.connect(whitelist2).whitelistMint(hexProof2,3,{value: ethers.utils.parseEther('0.21')})).to.be.revertedWith('Requested Claim Amount Invalid')  // Try to mint 3 when max should be 2
