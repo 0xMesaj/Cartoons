@@ -43,10 +43,10 @@ contract Cartoons is ERC721A, Ownable, ReentrancyGuard {
         _proof - bytes32 array to verify hash of msg.sender(leaf) is contained in merkle tree
         _amt - uint256 specifies amount to mint (must be no greater than rootMintAmt)
     */
-    function whitelistMint(bytes32[] calldata _proof, uint64 _amt) external payable nonReentrant {
+    function whitelistMint(bytes32[] calldata _proof, uint256 _amt) external payable nonReentrant {
         require(msg.sender == tx.origin, "Minting from Contract not Allowed");
         require(isWhitelistActive, "Cartoons Whitelist Mint Not Active");
-        uint64 newClaimTotal = _getAux(msg.sender) + _amt;
+        uint64 newClaimTotal = _getAux(msg.sender) + uint64(_amt);
         require(newClaimTotal <= rootMintAmt, "Requested Claim Amount Invalid");
         require(totalSupply() + _amt <= MAX_SUPPLY, "Mint Amount Exceeds Total Supply Cap");
         require(itemPrice * _amt == msg.value,  "Incorrect Payment");
