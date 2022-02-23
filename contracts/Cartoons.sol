@@ -24,7 +24,7 @@ contract Cartoons is ERC721A, Ownable, ReentrancyGuard {
     
     uint256 public rootMintAmt; // Mints allocated from whitelist mint for each whitelisted address
     uint256 public pubMintMaxPerTx = 1; // Max mint per transaction for public mint
-    uint256 public MAX_SUPPLY = 7777;   // Max supply allowed to be minted
+    uint256 public constant MAX_SUPPLY = 7777;   // Max supply allowed to be minted
     uint256 public itemPrice = 0.07 ether;   // Mint price
     bytes32 public root; // Merkle root
     string public baseURI = '';  // Base URI for tokenURI
@@ -118,15 +118,6 @@ contract Cartoons is ERC721A, Ownable, ReentrancyGuard {
     */
     function setItemPrice(uint256 _price) external onlyOwner {
 		itemPrice = _price;
-	}
-
-    /*
-        Sets new total supply
-        _amount - uint256 value to be new total supply
-    */
-    function setTotalSupply(uint256 _amount) external onlyOwner {
-        require(totalSupply() <= _amount, "Cannot Change Total Supply Lower Than Current Total");
-		MAX_SUPPLY = _amount;
 	}
 
     /*
