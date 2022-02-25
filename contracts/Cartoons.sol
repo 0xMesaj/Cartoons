@@ -24,18 +24,26 @@ contract Cartoons is ERC721A, Ownable, ReentrancyGuard {
     
     uint256 public rootMintAmt; // Mints allocated from whitelist mint for each whitelisted address
     uint256 public pubMintMaxPerTx = 1; // Max mint per transaction for public mint
-    uint256 public constant MAX_SUPPLY = 7777;   // Max supply allowed to be minted
+    uint256 public constant MAX_SUPPLY = 7527;   // Max supply allowed to be minted (7777 - 250 reserved)
     uint256 public itemPrice = 0.07 ether;   // Mint price
     bytes32 public root; // Merkle root
     string public baseURI = '';  // Base URI for tokenURI
     bool public isWhitelistActive;  // Access modifier for whitelist mint function
     bool public isPublicMintActive; // Access modifier for public mint function
+    mapping (address=>uint256) reservations;    // Mapping tracks reservation mints (250 total reserved)
 
     constructor (bytes32 _root, uint256 _rootMintAmt) ERC721A("Cartoons", "TOON") {
         root = _root;
         rootMintAmt = _rootMintAmt;
 
-        // transferOwnership(address());    // Transfer ownership to team
+        reservations[0x1A0cAAb1AdDdbB12dd61B7f7873c69C18f80AACf] = 25;
+        reservations[0xED96E702e654343297D5c56E49C4de4f882f8f8B] = 25;
+        reservations[0x0515c23D04B3C078e40363B9b3142303004F343c] = 25;
+        reservations[0x19F32B6D6912023c47BC0DF991d80CAAB52620a3] = 25;
+        reservations[0xFC56e522504348833BCE63a6c15101d28E9BC1c2] = 25;
+        reservations[0xbEB82e72F032631E6B3FF0b5Fa04aceA1D6bC0eb] = 125;
+
+        // transferOwnership(address(0xbEB82e72F032631E6B3FF0b5Fa04aceA1D6bC0eb));    // Transfer ownership to team
     }
 
     /*
@@ -69,6 +77,17 @@ contract Cartoons is ERC721A, Ownable, ReentrancyGuard {
         require(_amt <= pubMintMaxPerTx, "Requested Mint Amount Exceeds Limit Per Tx");  
         require(itemPrice * _amt == msg.value,  "Incorrect Payment");
 
+        _safeMint(msg.sender, _amt);
+    }
+
+    /*
+        Reserved Team Mint, 250 Total - Reentrancy Guarded
+        _amt - uint256 amount to mint
+    */
+    function reservationMint(uint256 _amt) external payable nonReentrant {
+        uint256 amtReserved = reservations[msg.sender];
+        require(amtReserved >= _amt, "No Reservation for requested amount");
+        reservations[msg.sender] -= _amt;
         _safeMint(msg.sender, _amt);
     }
 
