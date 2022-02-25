@@ -1,13 +1,13 @@
 const { expect } = require('chai');
-const { ethers } = require('hardhat');
-
 const { MerkleTree } = require('merkletreejs');
 const keccak256 = require('keccak256');
+const { network, ethers } = require("hardhat");
+
 
 describe('Cartoons NFT Tests', () => {
     let leafNodes,merkleTree,cartoons,rootHash,leaf,hexProof;
     beforeEach(async () => {
-        [whitelist1,whitelist2,whitelist3,whitelist4,whitelist5,whitelist6,hacker,unverifiedMinter] = await ethers.getSigners();
+        [whitelist1,whitelist2,whitelist3,whitelist4,whitelist5,whitelist6,whitelist7,hacker,unverifiedMinter] = await ethers.getSigners();
         cartoonsFactory = await ethers.getContractFactory('Cartoons');
         exploitFactory = await ethers.getContractFactory('ExploitSim');
 
@@ -62,6 +62,34 @@ describe('Cartoons NFT Tests', () => {
 
         await cartoons.publicMint(1,{value: ethers.utils.parseEther('0.07')})
 
+        ////////////////// TEST PLANT NEW ROOT //////////////////
+
+        // Add Whitelist 7 address to whitelist
+        let new_whitelist = [
+            whitelist1.address,
+            whitelist2.address,
+            whitelist3.address,
+            whitelist4.address,
+            whitelist5.address,
+            whitelist6.address,
+            whitelist7.address
+        ]
+
+        new_leafNodes = new_whitelist.map(item => keccak256(item))
+        new_merkleTree = new MerkleTree(new_leafNodes, keccak256, {sortPairs: true});
+        new_rootHash = new_merkleTree.getRoot();
+        await cartoons.setWhitelistMintActive(false)
+        await cartoons.plantNewRoot(new_rootHash,2)
+        await cartoons.setWhitelistMintActive(true)
+        new_hexProof = new_merkleTree.getHexProof(keccak256(whitelist7.address))    
+        await cartoons.connect(whitelist7).whitelistMint(new_hexProof,2,{value: ethers.utils.parseEther('0.14')}) // try to whitelist mint from our new added whitelist7 address
+
+        new_hexProof_WL1 = new_merkleTree.getHexProof(keccak256(whitelist1.address))    // Try to generate proof from new merkle tree from whitelist1 which has already minted 2 from previous root
+        await expect(cartoons.connect(whitelist1).whitelistMint(new_hexProof_WL1,1,{value: ethers.utils.parseEther('0.07')})).to.be.revertedWith('Requested Claim Amount Invalid')  // verify that whitelist1 cannot mint anymore from new root
+
+        new_hexProof_WL6 = new_merkleTree.getHexProof(keccak256(whitelist6.address))    
+        await cartoons.connect(whitelist6).whitelistMint(new_hexProof_WL6,2,{value: ethers.utils.parseEther('0.14')}) // verify whitelist6 which didnt mint on first root, can mint on new root
+    
         // Test withdraw functionality
         var owner = await cartoons.owner()
         var prov = ethers.provider;
