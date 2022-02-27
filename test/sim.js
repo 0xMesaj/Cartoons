@@ -89,14 +89,33 @@ describe('Cartoons NFT Tests', () => {
 
         new_hexProof_WL6 = new_merkleTree.getHexProof(keccak256(whitelist6.address))    
         await cartoons.connect(whitelist6).whitelistMint(new_hexProof_WL6,2,{value: ethers.utils.parseEther('0.14')}) // verify whitelist6 which didnt mint on first root, can mint on new root
-    
+
         // Test withdraw functionality
-        var owner = await cartoons.owner()
         var prov = ethers.provider;
-        var prebal = await prov.getBalance(owner)
+        var prebal1 = await prov.getBalance('0x1A0cAAb1AdDdbB12dd61B7f7873c69C18f80AACf')
+        var prebal2 = await prov.getBalance('0xED96E702e654343297D5c56E49C4de4f882f8f8B')
+        var prebal3 = await prov.getBalance('0x0515c23D04B3C078e40363B9b3142303004F343c')
+        var prebal4 = await prov.getBalance('0x19F32B6D6912023c47BC0DF991d80CAAB52620a3')
+        var prebal5 = await prov.getBalance('0xFC56e522504348833BCE63a6c15101d28E9BC1c2')
+        var prebal6 = await prov.getBalance('0x7f7602CFba48a032247e403E551886b8A9ea7267')
+        var prebal7 = await prov.getBalance('0xbEB82e72F032631E6B3FF0b5Fa04aceA1D6bC0eb')
         await cartoons.withdrawEth()
-        var bal = await prov.getBalance(owner)
-        await expect(parseInt(bal._hex)).to.be.greaterThan(parseInt(prebal._hex))
+        var bal1 = await prov.getBalance('0x1A0cAAb1AdDdbB12dd61B7f7873c69C18f80AACf')
+        var bal2 = await prov.getBalance('0xED96E702e654343297D5c56E49C4de4f882f8f8B')
+        var bal3 = await prov.getBalance('0x0515c23D04B3C078e40363B9b3142303004F343c')
+        var bal4 = await prov.getBalance('0x19F32B6D6912023c47BC0DF991d80CAAB52620a3')
+        var bal5 = await prov.getBalance('0xFC56e522504348833BCE63a6c15101d28E9BC1c2')
+        var bal6 = await prov.getBalance('0x7f7602CFba48a032247e403E551886b8A9ea7267')
+        var bal7 = await prov.getBalance('0xbEB82e72F032631E6B3FF0b5Fa04aceA1D6bC0eb')
+        await expect(parseInt(bal1._hex)).to.be.greaterThan(parseInt(prebal1._hex))
+        await expect(parseInt(bal2._hex)).to.be.greaterThan(parseInt(prebal2._hex))
+        await expect(parseInt(bal3._hex)).to.be.greaterThan(parseInt(prebal3._hex))
+        await expect(parseInt(bal4._hex)).to.be.greaterThan(parseInt(prebal4._hex))
+        await expect(parseInt(bal5._hex)).to.be.greaterThan(parseInt(prebal5._hex))
+        await expect(parseInt(bal6._hex)).to.be.greaterThan(parseInt(prebal6._hex))
+        await expect(parseInt(bal7._hex)).to.be.greaterThan(parseInt(prebal7._hex))
+
+        
     });
 
     it('Cartoons Merkle Tree Exploit Sim:', async () => {
