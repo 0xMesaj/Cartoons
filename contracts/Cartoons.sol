@@ -62,7 +62,7 @@ contract Cartoons is ERC721A, Ownable, ReentrancyGuard {
         _amt - uint256 specifies amount to mint (must be no greater than rootMintAmt)
     */
     function whitelistMint(bytes32[] calldata _proof, uint256 _amt) external payable nonReentrant {
-        require(totalSupply() + _amt <= MAX_SUPPLY - totalReserved, "Mint Amount Exceeds Total Supply Cap");
+        require(totalSupply() + _amt <= MAX_SUPPLY - totalReserved, "Mint Amount Exceeds Total Allowed Mints");
         require(msg.sender == tx.origin, "Minting from Contract not Allowed");
         require(isWhitelistActive, "Cartoons Whitelist Mint Not Active");
         uint64 newClaimTotal = _getAux(msg.sender) + uint64(_amt);
@@ -81,10 +81,10 @@ contract Cartoons is ERC721A, Ownable, ReentrancyGuard {
         _amt - uint256 amount to mint
     */
     function publicMint(uint256 _amt) external payable nonReentrant {
-        require(totalSupply() + _amt <= MAX_SUPPLY - totalReserved, "Mint Amount Exceeds Total Supply Cap");
+        require(totalSupply() + _amt <= MAX_SUPPLY - totalReserved, "Mint Amount Exceeds Total Allowed Mints");
         require(msg.sender == tx.origin, "Minting from Contract not Allowed");
         require(isPublicMintActive, "Cartoons Public Mint Not Active");
-        require(_amt <= pubMintMaxPerTx, "Requested Mint Amount Exceeds Limit Per Tx");  
+        require(_amt <= pubMintMaxPerTx, "Requested Mint Amount Exceeds Limit Per Tx"); 
         require(itemPrice * _amt == msg.value,  "Incorrect Payment");
 
         _safeMint(msg.sender, _amt);
