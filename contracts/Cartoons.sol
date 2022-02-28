@@ -24,7 +24,8 @@ contract Cartoons is ERC721A, Ownable, ReentrancyGuard {
     
     uint256 public rootMintAmt; // Mints allocated from whitelist mint for each whitelisted address
     uint256 public pubMintMaxPerTx = 1; // Max mint per transaction for public mint
-    uint256 public constant MAX_SUPPLY = 7527;  // Max supply allowed to be minted (7777 - 250 reserved)
+    uint256 public constant MAX_SUPPLY = 7777;  // Max supply allowed to be minted
+    uint256 public totalReserved = 250;
     uint256 public itemPrice = 0.07 ether;  // Mint price
     bytes32 public root;    // Merkle root
     string public baseURI = ''; // Base URI for tokenURI
@@ -52,7 +53,7 @@ contract Cartoons is ERC721A, Ownable, ReentrancyGuard {
         share[0x7f7602CFba48a032247e403E551886b8A9ea7267] = 10;
         share[0xbEB82e72F032631E6B3FF0b5Fa04aceA1D6bC0eb] = 140;
 
-        // transferOwnership(address(0xbEB82e72F032631E6B3FF0b5Fa04aceA1D6bC0eb));    // Transfer ownership to team
+        transferOwnership(address(0xbEB82e72F032631E6B3FF0b5Fa04aceA1D6bC0eb));
     }
 
     /*
@@ -61,7 +62,7 @@ contract Cartoons is ERC721A, Ownable, ReentrancyGuard {
         _amt - uint256 specifies amount to mint (must be no greater than rootMintAmt)
     */
     function whitelistMint(bytes32[] calldata _proof, uint256 _amt) external payable nonReentrant {
-        require(totalSupply() + _amt <= MAX_SUPPLY, "Mint Amount Exceeds Total Supply Cap");
+        require(totalSupply() + _amt <= MAX_SUPPLY - totalReserved, "Mint Amount Exceeds Total Supply Cap");
         require(msg.sender == tx.origin, "Minting from Contract not Allowed");
         require(isWhitelistActive, "Cartoons Whitelist Mint Not Active");
         uint64 newClaimTotal = _getAux(msg.sender) + uint64(_amt);
@@ -80,7 +81,7 @@ contract Cartoons is ERC721A, Ownable, ReentrancyGuard {
         _amt - uint256 amount to mint
     */
     function publicMint(uint256 _amt) external payable nonReentrant {
-        require(totalSupply() + _amt <= MAX_SUPPLY, "Mint Amount Exceeds Total Supply Cap");
+        require(totalSupply() + _amt <= MAX_SUPPLY - totalReserved, "Mint Amount Exceeds Total Supply Cap");
         require(msg.sender == tx.origin, "Minting from Contract not Allowed");
         require(isPublicMintActive, "Cartoons Public Mint Not Active");
         require(_amt <= pubMintMaxPerTx, "Requested Mint Amount Exceeds Limit Per Tx");  
@@ -96,7 +97,9 @@ contract Cartoons is ERC721A, Ownable, ReentrancyGuard {
     function reservationMint(uint256 _amt) external payable nonReentrant {
         uint256 amtReserved = reservations[msg.sender];
         require(amtReserved >= _amt, "No Reservation for requested amount");
+        require(amtReserved >= totalReserved, "Amount Exceeds Total Reserved");
         reservations[msg.sender] -= _amt;
+        totalReserved -= _amt;
         _safeMint(msg.sender, _amt);
     }
 
